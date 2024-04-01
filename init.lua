@@ -151,11 +151,75 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
--- Show which line your cursor is on
-vim.opt.cursorline = true
+-- [[ Moving / Editing]]
+vim.opt.cursorline = true -- have a line indicate the cursor location
+vim.opt.ruler = true -- show the cursor position all the time
+vim.opt.virtualedit = 'block' -- Let cursor move past the last char in <C-v> mode
+vim.opt.scrolloff = 10 -- Keep 3 context lines above and below the cursor
+vim.opt.linebreak = true -- don't wrap textin the middle of a word
+vim.opt.autoindent = true -- always set autoindenting on
+vim.opt.smartindent = true -- use smart indent if there is no indent file
+vim.opt.tabstop = 2 -- <tab> inserts 4 spaces
+vim.opt.shiftwidth = 2 -- but an indent level is 2 spaces wide.
+vim.opt.softtabstop = 2 -- <BS> over an autoindent deletes both spaces.
+vim.opt.expandtab = true -- Use spaces, not tabs, for autoindent/tab key.
+vim.opt.shiftround = true -- rounds indent to a multiple of shiftwidth
 
--- Minimal number of screen lines to keep above and below the cursor.
-vim.opt.scrolloff = 10
+-- [[ Reading/Writing ]]
+vim.opt.autowrite = false -- Never write a file unless I request it.
+vim.opt.autowriteall = false -- NEVER.
+vim.opt.autoread = false -- Don't automatically re-read changed files.
+vim.opt.modeline = true -- Allow vim options to be embedded in files;
+vim.opt.modelines = 5 -- they must be within the first or last 5 lines.
+vim.opt.ffs = 'unix,dos,mac' -- Try recognizing dos, unix, and mac line endings.
+vim.opt.swapfile = false
+
+vim.cmd [[
+" <|>: Reselect visual block after indent
+vnoremap < <gv
+vnoremap > >gv
+
+" Yank from the cursor to the end of the line, to be consistent with C and D.
+nnoremap Y y$
+
+map <leader>p :set paste!<CR>
+
+" Bubble multiple lines
+vmap <C-Up> [egv
+vmap <C-Down> ]egv
+
+" Buffer resizing
+nmap <S-Up> :resize +1<CR>
+nmap <S-Down> :resize -1<CR>
+nmap <F12> :1winc< <CR>
+nmap <F11> :1winc> <CR>
+
+" tab navigation
+nmap <C-Up> :tabprev
+nmap <C-Down> :tabnext
+
+" Some helpers to edit mode
+" http://vimcasts.org/e/14
+cnoremap %% <C-R>=expand('%:h').'/'<cr>
+map <leader>ew :e %%
+map <leader>es :sp %%
+map <leader>ev :vsp %%
+map <leader>et :tabe %%
+
+]]
+
+-- Tabulatize shortcuts
+vim.keymap.set({ 'n', 'v' }, '<leader>tt&', '<cmd>Tabularize /&<cr>', { desc = 'Align &' })
+vim.keymap.set({ 'n', 'v' }, '<leader>tt=', '<cmd>Tabularize /=<cr>', { desc = 'Align =' })
+vim.keymap.set({ 'n', 'v' }, '<leader>tt:', '<cmd>Tabularize /:<cr>', { desc = 'Align :' })
+vim.keymap.set({ 'n', 'v' }, '<leader>tt,', '<cmd>Tabularize /,<cr>', { desc = 'Align ,' })
+vim.keymap.set({ 'n', 'v' }, '<leader>tt<Bar>,', '<cmd>Tabularize /<Bar>cr>', { desc = 'Align |' })
+
+-- Bubble single lines
+vim.keymap.set('n', '<C-up>', '[e', { remap = true })
+vim.keymap.set('n', '<C-down>', ']e', { remap = true })
+vim.keymap.set('v', '<C-up>', '[ev', { remap = true })
+vim.keymap.set('v', '<C-down>', ']ev', { remap = true })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -165,6 +229,9 @@ vim.opt.scrolloff = 10
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 
 -- Diagnostic keymaps
+vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]iagnostic message' })
+vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
+vim.keymap.set('n', '<leader>E', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
@@ -230,6 +297,9 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
+  'tummetott/unimpaired.nvim',
+
+  'godlygeek/tabular', -- Allow to align things based on seperator
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
