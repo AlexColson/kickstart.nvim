@@ -184,10 +184,6 @@ nnoremap Y y$
 
 map <leader>p :set paste!<CR>
 
-" Bubble multiple lines
-vmap <C-Up> [egv
-vmap <C-Down> ]egv
-
 " Buffer resizing
 nmap <S-Up> :resize +1<CR>
 nmap <S-Down> :resize -1<CR>
@@ -216,10 +212,10 @@ vim.keymap.set({ 'n', 'v' }, '<leader>tt,', '<cmd>Tabularize /,<cr>', { desc = '
 vim.keymap.set({ 'n', 'v' }, '<leader>tt<Bar>,', '<cmd>Tabularize /<Bar>cr>', { desc = 'Align |' })
 
 -- Bubble single lines
-vim.keymap.set('n', '<C-up>', '[e', { remap = true })
-vim.keymap.set('n', '<C-down>', ']e', { remap = true })
-vim.keymap.set('v', '<C-up>', '[ev', { remap = true })
-vim.keymap.set('v', '<C-down>', ']ev', { remap = true })
+vim.keymap.set('n', '<C-up>', '[egv', { remap = true })
+vim.keymap.set('n', '<C-down>', ']egv', { remap = true })
+vim.keymap.set('v', '<C-up>', '[evgv', { remap = true })
+vim.keymap.set('v', '<C-down>', ']evgv', { remap = true })
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -297,7 +293,14 @@ vim.opt.rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
-  'tummetott/unimpaired.nvim',
+
+  { -- Useful plugin to show you pending keybinds.
+    'tummetott/unimpaired.nvim',
+    event = 'VimEnter', -- Sets the loading event to 'VimEnter'
+    config = function() -- This is the function that runs, AFTER loading
+      require('unimpaired').setup {}
+    end,
+  },
 
   'godlygeek/tabular', -- Allow to align things based on seperator
 
